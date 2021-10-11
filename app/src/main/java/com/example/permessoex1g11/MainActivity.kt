@@ -1,6 +1,7 @@
 package com.example.permessoex1g11
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private fun requestCameraPermission() {
         var permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permission==PackageManager.PERMISSION_GRANTED){
-            //startCamera()
+            startCamera()
             Toast.makeText(this, "Placeholder, ma ci siamo arrivati",Toast.LENGTH_LONG).show()
         }else{
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
@@ -40,12 +41,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startCamera() {
+        val intent = Intent(this, CameraActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun showADialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("E no!")
             .setMessage("Consenti a tutto o ti spezzo le gambe")
             .setPositiveButton("Consenti!", {dialog, which->
-                requestCameraPermission()
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_CODE)
                 dialog.dismiss()})
             .setNegativeButton("No,ti sfido.", {dialog, which -> dialog.dismiss()})
             .show()
@@ -60,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         when(requestCode){
             REQUEST_CAMERA_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults.first() == PackageManager.PERMISSION_GRANTED){
-                    //startCamera()
+                    startCamera()
                 }
             }
             else -> {}
