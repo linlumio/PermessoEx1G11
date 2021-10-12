@@ -1,20 +1,28 @@
 package com.example.permessoex1g11
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Camera
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.util.jar.Manifest
 
 class CameraActivity : AppCompatActivity() {
     val REQUEST_LOCATION_CODE = 2
+    lateinit var fusedLocationClient:FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         //inizio controllando che l'hardware camera sia rilevato
         if(checkCameraHardware(this)){
@@ -23,6 +31,7 @@ class CameraActivity : AppCompatActivity() {
             mPreview?.also {
                 val preview: FrameLayout = findViewById(R.id.camera_preview)
                 preview.addView(it)
+                requestLocationPermission()
             }
 
 
@@ -80,6 +89,22 @@ class CameraActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastKnownLocation(){
+        /** attraverso l'istanza di location possiamo recuperare
+         * il tutto, ma in alcuni rari casi questa istanza
+         * può essere null
+         */
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                /**logica per recuperare i dati se location != null*/
+                var lat = location?.latitude.toString()
+                var long = location?.longitude.toString()
+                findViewById<TextView>(R.id.testo_cordinate2).text = "latitudine $lat"
+                findViewById<TextView>(R.id.testo_cordinate3).text = "longitudine $long"
+            }
     }
 
 }
